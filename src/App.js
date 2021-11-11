@@ -1,6 +1,6 @@
 import './App.css';
 import FormStep1 from './components/FormStep1';
-import { useState, useEffect} from "react";
+import { useState} from "react";
 import Button from '@mui/material/Button';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
@@ -13,10 +13,7 @@ import TextField from '@mui/material/TextField';
 
 function App() {
   const [formStep, setFormStep] = useState(0);
-  const [bpmMorning, setBpmMorning] = useState([]);
-  const [systoleMorning, setSystoleMorning] = useState([]);
-  const [diastoleMorning, setDiastoleMorning] = useState([]);
-  const [data, setData] = useState([
+  const [data] = useState([
     {day: 1, diastoleMatin: null, systoleMatin: null, bpmMatin: null, diastoleSoir: null, systoleSoir: null, bpmSoir: null},
     {day: 2, diastoleMatin: null, systoleMatin: null, bpmMatin: null, diastoleSoir: null, systoleSoir: null, bpmSoir: null},
     {day: 3, diastoleMatin: null, systoleMatin: null, bpmMatin: null, diastoleSoir: null, systoleSoir: null, bpmSoir: null},
@@ -57,7 +54,7 @@ function App() {
     data[index].bpmSoir = parseInt(e.target.value)
   }
 
-  if(formStep == 1) {
+  if(formStep === 1) {
     return (
       <div className="App">
         <header className="App-header">
