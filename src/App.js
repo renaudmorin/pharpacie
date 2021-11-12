@@ -80,12 +80,12 @@ function App() {
     return (
       <div className="App">
         <header className="App-header">
-          <div>
+          <div className="tableData">
             <TableContainer component={Paper}>
               <Table sx={{ minWidth: 650 }} aria-label="simple table">
                 <TableHead>
                   <TableRow>
-                    <TableCell>Dessert (100g serving)</TableCell>
+                    <TableCell></TableCell>
                     <TableCell align="center">diastole matin</TableCell>
                     <TableCell align="center">systole matin</TableCell>
                     <TableCell align="center">bpm matin</TableCell>
@@ -130,12 +130,16 @@ function App() {
         
           <FormStep1 step= { formStep }/>
           <div className="buttonGroup">
-            <Button onClick={() => {
-              if(formStep === 0) {
-                return;
-              }
-              setFormStep(formStep - 1);
-            }} style={{backgroundColor: "white", width: "100px", color: "black", marginRight:"50px"}}>Back</Button>
+            { formStep > 0 && (
+              <Button onClick={() => {
+                if(formStep === 0) {
+                  return;
+                }
+                setFormStep(formStep - 1);
+              }} style={{backgroundColor: "white", width: "100px", color: "black", marginRight:"50px"}}>
+                Back
+              </Button>
+            )}
             <Button onClick={() => {
               setFormStep(formStep + 1);
             }} style={{backgroundColor: "white", width: "100px", color: "black"}}>Next</Button>
