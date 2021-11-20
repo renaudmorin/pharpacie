@@ -1,6 +1,6 @@
 import './App.css';
 import FormStep1 from './components/FormStep1';
-import { useState} from "react";
+import { useState, useEffect} from "react";
 import Button from '@mui/material/Button';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
@@ -13,22 +13,10 @@ import TextField from '@mui/material/TextField';
 
 function App() {
   const [formStep, setFormStep] = useState(0);
-  const [data] = useState([
-    {day: 1, diastoleMatin: null, systoleMatin: null, bpmMatin: null, diastoleSoir: null, systoleSoir: null, bpmSoir: null},
-    {day: 2, diastoleMatin: null, systoleMatin: null, bpmMatin: null, diastoleSoir: null, systoleSoir: null, bpmSoir: null},
-    {day: 3, diastoleMatin: null, systoleMatin: null, bpmMatin: null, diastoleSoir: null, systoleSoir: null, bpmSoir: null},
-    {day: 4, diastoleMatin: null, systoleMatin: null, bpmMatin: null, diastoleSoir: null, systoleSoir: null, bpmSoir: null},
-    {day: 5, diastoleMatin: null, systoleMatin: null, bpmMatin: null, diastoleSoir: null, systoleSoir: null, bpmSoir: null},
-    {day: 6, diastoleMatin: null, systoleMatin: null, bpmMatin: null, diastoleSoir: null, systoleSoir: null, bpmSoir: null},
-    {day: 7, diastoleMatin: null, systoleMatin: null, bpmMatin: null, diastoleSoir: null, systoleSoir: null, bpmSoir: null},
-    {day: 8, diastoleMatin: null, systoleMatin: null, bpmMatin: null, diastoleSoir: null, systoleSoir: null, bpmSoir: null},
-    {day: 9, diastoleMatin: null, systoleMatin: null, bpmMatin: null, diastoleSoir: null, systoleSoir: null, bpmSoir: null},
-    {day: 10, diastoleMatin: null, systoleMatin: null, bpmMatin: null, diastoleSoir: null, systoleSoir: null, bpmSoir: null},
-    {day: 11, diastoleMatin: null, systoleMatin: null, bpmMatin: null, diastoleSoir: null, systoleSoir: null, bpmSoir: null},
-    {day: 12, diastoleMatin: null, systoleMatin: null, bpmMatin: null, diastoleSoir: null, systoleSoir: null, bpmSoir: null},
-    {day: 13, diastoleMatin: null, systoleMatin: null, bpmMatin: null, diastoleSoir: null, systoleSoir: null, bpmSoir: null},
-    {day: 14, diastoleMatin: null, systoleMatin: null, bpmMatin: null, diastoleSoir: null, systoleSoir: null, bpmSoir: null},
-  ])
+  const [data, setData] = useState([
+    {day: 1, diastoleMatin: null, systoleMatin: null, bpmMatin: null, diastoleSoir: null, systoleSoir: null, bpmSoir: null}
+  ]);
+  const [isLoading, setIsLoading] = useState(true);
 
   function onDiastoleMatinChange(index, e) {
     data[index].diastoleMatin = parseInt(e.target.value)
@@ -54,29 +42,96 @@ function App() {
     data[index].bpmSoir = parseInt(e.target.value)
   }
 
+  function addRow() {
+    let biggestIndex = 0;
+    for(const row of data) {
+      if(row.day > biggestIndex) {
+        biggestIndex = row.day;
+      }
+    }
+    setData([...data, {day: biggestIndex + 1, diastoleMatin: null, systoleMatin: null, bpmMatin: null, diastoleSoir: null, systoleSoir: null, bpmSoir: null} ])
+  }
+
+  function removeRow() {
+    let oldArray = [...data];
+    oldArray.pop();
+    setData(oldArray);
+  }
+
+  useEffect(() => {
+    if(formStep === 3) {
+      setTimeout(function () {
+          setIsLoading(false);
+      }, 2000);
+    }
+    if(formStep !== 3) {
+      setIsLoading(true);
+    }
+  }, [data, formStep])
+
   if(formStep === 1) {
     return (
       <div className="App">
         <header className="App-header">
           <FormStep1 data={data} step={formStep}/>
+          
           <div className="buttonGroup">
             <Button onClick={() => {
               if(formStep === 0) {
                 return;
               }
               setFormStep(formStep - 1);
-            }} style={{backgroundColor: "white", width: "100px", color: "black", marginRight:"50px"}}>Back</Button>
+            }} style={{backgroundColor: "white", width: "200px", color: "black", marginRight:"50px"}}>Retour</Button>
             <Button onClick={() => {
-              if(formStep >= 1) {
+              if(formStep >= 2) {
                 return;
               }
               setFormStep(formStep + 1);
-            }} style={{backgroundColor: "white", width: "100px", color: "black"}}>Next</Button>
+            }} style={{backgroundColor: "white", width: "200px", color: "black"}}>Voir mes recommendations</Button>
           </div>
         </header>
       </div>
     )
-  } else {
+  } 
+  if(formStep === 2) {
+    return (
+      <div className="App">
+        <header className="App-header">
+          <FormStep1 data={data} step={formStep}/>
+          <div className="buttonGroup">
+            <Button onClick={() => {
+              setFormStep(formStep - 1);
+            }} style={{backgroundColor: "white", width: "200px", color: "black", marginRight: "50px", marginTop:"15px"}}>
+              Retour
+            </Button>
+            <Button onClick={() => {
+              setFormStep(formStep + 1)
+            }} style={{backgroundColor: "white", width: "200px", color: "black", marginTop:"15px"}}>
+             Je comprends   
+            </Button>
+          </div>
+        </header>
+      </div>
+    )
+  }
+  if(formStep === 3) {
+    return (
+      <div className="App">
+        <header className="App-header">
+          <FormStep1 data={data} step={formStep} isLoading={isLoading}/>
+          <div className="buttonGroup">
+            <Button onClick={() => {
+              if(formStep === 0) {
+                return;
+              }
+              setFormStep(formStep - 1);
+            }} style={{backgroundColor: "white", width: "200px", color: "black"}}>Retour</Button>
+          </div>
+        </header>
+      </div>
+    )
+  }
+  else {
     return (
       <div className="App">
         <header className="App-header">
@@ -86,12 +141,12 @@ function App() {
                 <TableHead>
                   <TableRow>
                     <TableCell></TableCell>
-                    <TableCell align="center">diastole matin</TableCell>
-                    <TableCell align="center">systole matin</TableCell>
-                    <TableCell align="center">bpm matin</TableCell>
-                    <TableCell align="center">diastole soir</TableCell>
-                    <TableCell align="center">systole soir</TableCell>
-                    <TableCell align="center">bpm soir</TableCell>
+                    <TableCell align="center">Systole matin</TableCell>
+                    <TableCell align="center">Diastole matin</TableCell>
+                    <TableCell align="center">Bpm matin</TableCell>
+                    <TableCell align="center">Systole soir</TableCell>
+                    <TableCell align="center">Diastole soir</TableCell>
+                    <TableCell align="center">Bpm soir</TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
@@ -104,28 +159,38 @@ function App() {
                         Journée {row.day}
                       </TableCell>
                       <TableCell align="center">
-                        <TextField style={{width: '100px', height: '100px'}} onChange={(e) => onDiastoleMatinChange(i, e)} />
+                        <TextField style={{width: '100px', height: '100px', marginTop: '50%'}} defaultValue={row.systoleMatin} onChange={(e) => onSystoleMatinChange(i, e)} />
                       </TableCell>
                       <TableCell align="center">
-                        <TextField style={{width: '100px', height: '100px'}} onChange={(e) => onSystoleMatinChange(i, e)} />
+                        <TextField style={{width: '100px', height: '100px', marginTop: '50px'}} defaultValue={row.diastoleMatin} onChange={(e) => onDiastoleMatinChange(i, e)} />
                       </TableCell>
                       <TableCell align="center">
-                        <TextField style={{width: '100px', height: '100px'}} onChange={(e) => onBpmMatinChange(i, e)} />
+                        <TextField style={{width: '100px', height: '100px', marginTop: '50px'}} defaultValue={row.bpmMatin} onChange={(e) => onBpmMatinChange(i, e)} />
                       </TableCell>
                       <TableCell align="center">
-                        <TextField style={{width: '100px', height: '100px'}} onChange={(e) => onDiastoleSoirChange(i, e)} />
+                        <TextField style={{width: '100px', height: '100px', marginTop: '50px'}} defaultValue={row.systoleSoir} onChange={(e) => onSystoleSoirChange(i, e)} />
                       </TableCell>
                       <TableCell align="center">
-                        <TextField style={{width: '100px', height: '100px'}} onChange={(e) => onSystoleSoirChange(i, e)} />
+                        <TextField style={{width: '100px', height: '100px', marginTop: '50px'}} defaultValue={row.diastoleSoir} onChange={(e) => onDiastoleSoirChange(i, e)} />
                       </TableCell>
                       <TableCell align="center">
-                        <TextField style={{width: '100px', height: '100px'}} onChange={(e) => onBpmSoirChange(i, e)} />
+                        <TextField style={{width: '100px', height: '100px', marginTop: '50px'}} defaultValue={row.bpmSoir} onChange={(e) => onBpmSoirChange(i, e)} />
                       </TableCell>
                     </TableRow>
                   ))}
                 </TableBody>
               </Table>
             </TableContainer>
+              <Button onClick={() => {
+                addRow();
+              }} style={{backgroundColor: "white", width: "200px", color: "black", marginRight: "50px", marginTop:"15px"}}>
+                Ajouter une journée 
+              </Button>
+              <Button onClick={() => {
+                removeRow();
+              }} style={{backgroundColor: "white", width: "200px", color: "black", marginTop:"15px"}}>
+                 Retirer une journée 
+              </Button>
           </div>
         
           <FormStep1 step= { formStep }/>
@@ -136,13 +201,13 @@ function App() {
                   return;
                 }
                 setFormStep(formStep - 1);
-              }} style={{backgroundColor: "white", width: "100px", color: "black", marginRight:"50px"}}>
-                Back
+              }} style={{backgroundColor: "white", width: "200px", color: "black", marginRight:"50px"}}>
+                Retour
               </Button>
             )}
             <Button onClick={() => {
               setFormStep(formStep + 1);
-            }} style={{backgroundColor: "white", width: "100px", color: "black"}}>Next</Button>
+            }} style={{backgroundColor: "white", width: "200px", color: "black"}}>Voir ma moyenne</Button>
           </div>
         </header>
       </div>

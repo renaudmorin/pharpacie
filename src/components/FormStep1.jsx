@@ -1,13 +1,13 @@
 import React from 'react';
 import { useState, useEffect} from "react";
+import CircularProgress from '@mui/material/CircularProgress';
+import Box from '@mui/material/Box';
 
 
 export default function FormStep1(props) {
     const [diastoleAvg, setDiastoleAvg] = useState(0.0);
     const [systoleAvg, setSystoleAvg] = useState(0.0);
     const [bpmAvg, setBpmAvg] = useState(0.0);
-
-
 
     useEffect(() => {
         function calculateTotals() {
@@ -50,18 +50,78 @@ export default function FormStep1(props) {
                 setBpmAvg(bpmTotals / bpmCounts);
             }
         }
-        calculateTotals();
 
-    }, [props.data])
+        calculateTotals();
+    }, [props.data, props.step])
 
     if(props.step === 1) {
         return (
             <div>
-                <span>Moyenne diastole: {diastoleAvg.toString()}</span> <br/>
-                <span>Moyenne systole: {systoleAvg.toString()}</span> <br/>
-                <span>Moyenne bpm: {bpmAvg.toString()}</span>
+                <h2>Voici vos moyennes</h2>
+                <div className="avg">
+                    <span className="avg">Moyenne de votre taux de systole en mmHg: {isNaN(systoleAvg) ? "Indisponible" : systoleAvg.toString()}</span> <br/>
+                </div>
+                <div className="avg">
+                    <span className="avg">Moyenne de votre taux de diastole en mmHg: {isNaN(diastoleAvg) ? "Indisponible" : diastoleAvg.toString()}</span> <br/>
+                </div>
+                <div>
+                    <span className="avg">Moyenne de votre battements de coeur par minute: {isNaN(bpmAvg) ? "Indisponible" : bpmAvg.toString()}</span>
+                </div>
             </div>
         )
+    }
+    if(props.step === 3) {
+        return (
+            <div>
+                {props.isLoading && (
+                    <Box sx={{ display: 'flex' }}>
+                        <CircularProgress />
+                    </Box>
+                )}
+                { systoleAvg <= 120 && diastoleAvg <= 80 && !props.isLoading && (
+                    <div>
+                        <h2 className="good-result">Vos valeurs de tensions sont belles! Continuez vos efforts.</h2>
+                        <span className="question">
+                            Peur que vos résultats soient trop bas? {" "}
+                            <span className="result">
+                                L'hypertension n'est pas un problème médical en tant que tel, tant que vous n'êtes pas symptomatique. Si vous ressentez de la fatigue, des étourdissements, de la nausée ou des faiblesses en général, consultez votre pharmacien.
+                            </span>
+                        </span>   
+                    </div>
+                )}
+                { systoleAvg > 120 && diastoleAvg > 80 && systoleAvg <= 135 && diastoleAvg <= 85 && !props.isLoading && (
+                    <div>
+                        <h2 className="good-result">Vos valeurs de tensions sont belles! Continuez vos efforts.</h2>
+                        <div className="result-box">
+                            <span className="question">
+                                Mais attention! {" "}
+                                    <span className="result">
+                                        Il se peut que, selon votre condition de santé ou votre âge, vos cibles soient plus basses. À ce moment, référez-vous aux cibles données par votre professionnel de la santé. Si les valeurs sont plus hautes que ces cibles, contactez votre pharmacien.
+                                    </span>
+                            </span>   
+                        </div>
+                    </div>
+                )}
+                { (systoleAvg > 135 || diastoleAvg > 85) && !props.isLoading && (
+                    <div>
+                        <h2 className="bad-result">Attention! Vos valeurs sont élevées. Consultez votre pharmacien.</h2>  
+                    </div>
+                )}
+                { (isNaN(systoleAvg) || isNaN(diastoleAvg) ) && !props.isLoading && (
+                    <div>
+                        <h2>Uh oh...</h2>
+                        <span className="result">Il me manque des informations pour pouvoir établir des recommendations. Veuillez réessayer avec des données valides.</span>
+                    </div>
+                )}
+            </div>
+        )
+    }
+    if(props.step === 2) {
+        return (
+            <div className="disclaimer">
+                <span className="disclaimer-text">Les résultats suivants ne remplacent jamais le jugement d'un professionnel de la santé. Si une anomalie dans les données sont détectés, contactez votre pharmacien. Les cibles thérapeutiques peuvent ne pas être adéquates selon votre condition de santé ou votre âge. Consultez votre pharmacien si le cas est échéant.</span>
+            </div>
+    )
     }
     else {
         return null;
