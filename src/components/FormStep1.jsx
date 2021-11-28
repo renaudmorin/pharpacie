@@ -8,8 +8,11 @@ export default function FormStep1(props) {
     const [diastoleAvg, setDiastoleAvg] = useState(0.0);
     const [systoleAvg, setSystoleAvg] = useState(0.0);
     const [bpmAvg, setBpmAvg] = useState(0.0);
+    const [cases, setCases] = useState(0);
 
     useEffect(() => {
+        let diasAvg = 0;
+        let sysAvg = 0;
         function calculateTotals() {
             if(props.data) {
                 let diastoleTotals = 0;
@@ -45,14 +48,42 @@ export default function FormStep1(props) {
                     }
                     return [];
                 })
+                diasAvg = (diastoleTotals / diastoleCounts)
+                sysAvg = (systoleTotals / systoleCounts)
                 setDiastoleAvg(diastoleTotals / diastoleCounts);
                 setSystoleAvg(systoleTotals / systoleCounts);
                 setBpmAvg(bpmTotals / bpmCounts);
             }
         }
+        function displayedCase() {
+            if(sysAvg <= 120 && diasAvg <= 80) {
+                setCases(1);
+                return;
+            }
+            else if(sysAvg > 120 && diasAvg > 80 && sysAvg <= 135 && diasAvg <= 85) {
+                setCases(2);
+                return;
+            }
+            else if(sysAvg > 135 || diasAvg > 85) {
+                setCases(3);
+                return;
+            }
+            else if((isNaN(sysAvg) || isNaN(diasAvg) )) {
+                setCases(4);
+            }
+            else {
+                setCases(1);
+                return;
+            }
 
+        }
         calculateTotals();
+        displayedCase();
     }, [props.data, props.step])
+
+    useEffect(() => {
+
+    }, [cases])
 
     if(props.step === 1) {
         return (
@@ -78,7 +109,7 @@ export default function FormStep1(props) {
                         <CircularProgress />
                     </Box>
                 )}
-                { systoleAvg <= 120 && diastoleAvg <= 80 && !props.isLoading && (
+                { cases === 1 && !props.isLoading && (
                     <div>
                         <h2 className="good-result">Vos valeurs de tensions sont belles! Continuez vos efforts.</h2>
                         <span className="question">
@@ -89,7 +120,7 @@ export default function FormStep1(props) {
                         </span>   
                     </div>
                 )}
-                { systoleAvg > 120 && diastoleAvg > 80 && systoleAvg <= 135 && diastoleAvg <= 85 && !props.isLoading && (
+                { cases === 2 && !props.isLoading && (
                     <div>
                         <h2 className="good-result">Vos valeurs de tensions sont belles! Continuez vos efforts.</h2>
                         <div className="result-box">
@@ -102,15 +133,15 @@ export default function FormStep1(props) {
                         </div>
                     </div>
                 )}
-                { (systoleAvg > 135 || diastoleAvg > 85) && !props.isLoading && (
+                { (cases === 3) && !props.isLoading && (
                     <div>
                         <h2 className="bad-result">Attention! Vos valeurs sont élevées. Consultez votre pharmacien.</h2>  
                     </div>
                 )}
-                { (isNaN(systoleAvg) || isNaN(diastoleAvg) ) && !props.isLoading && (
+                { (cases === 4) && !props.isLoading && (
                     <div>
                         <h2>Uh oh...</h2>
-                        <span className="result">Il me manque des informations pour pouvoir établir des recommendations. Veuillez réessayer avec des données valides.</span>
+                        <span className="result">Il me manque des informations pour pouvoir établir des recommandations. Veuillez réessayer avec des données valides.</span>
                     </div>
                 )}
             </div>
@@ -119,7 +150,7 @@ export default function FormStep1(props) {
     if(props.step === 2) {
         return (
             <div className="disclaimer">
-                <span className="disclaimer-text">Les résultats suivants ne remplacent jamais le jugement d'un professionnel de la santé. Si une anomalie dans les données sont détectés, contactez votre pharmacien. Les cibles thérapeutiques peuvent ne pas être adéquates selon votre condition de santé ou votre âge. Consultez votre pharmacien si le cas est échéant.</span>
+                <span className="disclaimer-text">Les résultats suivants ne remplacent jamais le jugement d'un professionnel de la santé. Si une anomalie dans les données est détectée, contactez votre pharmacien. Les cibles thérapeutiques peuvent ne pas être adéquates selon votre condition de santé ou votre âge. Consultez votre pharmacien si le cas échéant.</span>
             </div>
     )
     }

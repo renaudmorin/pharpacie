@@ -87,7 +87,7 @@ function App() {
                 return;
               }
               setFormStep(formStep + 1);
-            }} style={{backgroundColor: "white", width: "200px", color: "black"}}>Voir mes recommendations</Button>
+            }} style={{backgroundColor: "white", width: "200px", color: "black"}}>Voir mes recommandation</Button>
           </div>
         </header>
       </div>
